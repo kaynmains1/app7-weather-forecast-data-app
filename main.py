@@ -9,7 +9,18 @@ days = st.slider(label="Forecast days", min_value=1, max_value=5, help="Select t
 box = st.selectbox(label="Select data to view", options=("Temperature", "Sky"), key="box")
 st.subheader(f"{box} for the next {days} days in {place.capitalize()}")
 
-data = get_data(place, days, box)
+if place:
+    filtered_data = get_data(place, days)
 
-figure = px.line(d, t, labels={"x": "Date", "y": "Temperature (C)"})
-chart = st.plotly_chart(figure)
+    if box == "Temperature":
+        temperature = [dict["main"]["temp"] for dict in filtered_data]
+        dates = [dict["dt_txt"] for dict in filtered_data]
+        figure = px.line(x=dates, y=temperature, labels={"x": "Date", "y": "Temperature (C)"})
+        chart = st.plotly_chart(figure)
+
+    if box == "Sky":
+        images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
+                  "Rain": "images/rain.png", "Snow":"images/snow,png"}
+        sky_condition = [dict["weather"][0]["main"] for dict in filtered_data]
+        image = [images[condition] for condition in sky_condition]
+        st.image(image, width= 115)
