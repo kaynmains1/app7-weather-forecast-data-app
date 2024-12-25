@@ -1,7 +1,6 @@
 import streamlit as st
-import numpy as np
-import pandas as pd
 import plotly.express as px
+from backend import get_data
 
 
 st.title("Weather Forecast for the Next Days")
@@ -10,11 +9,7 @@ days = st.slider(label="Forecast days", min_value=1, max_value=5, help="Select t
 box = st.selectbox(label="Select data to view", options=("Temperature", "Sky"), key="box")
 st.subheader(f"{box} for the next {days} days in {place.capitalize()}")
 
-def get_data(days):
-    temperature = 3
-    return days, temperature
-
-d, t = get_data(days)
+data = get_data(place, days, box)
 
 figure = px.line(d, t, labels={"x": "Date", "y": "Temperature (C)"})
 chart = st.plotly_chart(figure)
